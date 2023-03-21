@@ -1,0 +1,261 @@
+
+"The Blood Bridge" is a web-based software that aims to bridge the gap between those in need of blood and those who are willing to donate. The platform allows users to register their blood type, location, age, and phone number, creating a database of potential blood donors. In times of blood emergencies, users can filter the available donors based on their blood group and location to find a suitable match. This innovative solution aims to streamline the process of finding blood donors, saving lives, and providing quick access to the critical blood supply. With "The Blood Bridge," users can be confident that they will have a reliable source of blood when they need it most.
+
+
+Time-consuming process: Conventional blood searching systems often involve calling or visiting blood banks, hospitals, or blood donation centers, which can be a time-consuming process. With "The Blood Bridge," users can quickly filter available donors based on their blood group and location, reducing the time it takes to find a suitable donor.
+
+Limited access: Blood banks, hospitals, and donation centers are often limited by their geographical locations, which can make it challenging for people in remote areas to access the blood they need. "The Blood Bridge" can help solve this problem by allowing users from anywhere to register as a blood donor and make their blood available to those in need, regardless of location.
+
+Limited information: Conventional systems often have limited information about the donors, such as their blood type, location, or availability. "The Blood Bridge" allows users to register comprehensive information about themselves, making it easier to find suitable donors quickly.
+
+Inefficient communication: In conventional systems, communication between donors and recipients can be inefficient and time-consuming. "The Blood Bridge" offers a platform for quick and efficient communication between donors and recipients, ensuring that blood is delivered quickly and efficiently.
+
+Overall, "The Blood Bridge" offers an innovative solution to the challenges faced by conventional blood searching systems, making it easier and quicker to find blood donors and save lives.
+
+                                  +------------+          +-------------+
+                                  | Blood Type |          |     City    |
+                                  +------------+          +-------------+
+                                         |                        |
+                                         |                        |
+                                         |                        |
+                        +----------------+------------------------+----------------+
+                        |                                 User                                |
+                        |-----------------------------------------------------------|
+                        | User ID                                                 |
+                        | Name                                                      |
+                        | Age                                                         |
+                        | Phone Number                                        |
+                        | Email                                                     |
+                        +------------------------------------------------------------+
+                                         |
+                       +-----------------+---------------------------+
+                       |                          Request                      |
+                       |-------------------------------------------------------------|
+                       | Request ID                                          |
+                       | Blood Type ID (FK)                             |
+                       | City ID (FK)                                        |
+                       | Date and Time                                       |
+                       | User ID (FK)                                        |
+                       +--------------------------------------------------------------+
+                                         |
+                       +-----------------+------------------------------+
+                       |                                 Admin                             |
+                       |----------------------------------------------------------------------|
+                       | Admin ID                                                 |
+                       | Name                                                         |
+                       | Email                                                        |
+                       | Password                                                 |
+                       +----------------------------------------------------------------------+
+                                         |
+                        +---------------+---------------+
+                        |                             Donor                        |
+                        |-------------------------------------------------|
+                        | Donor ID                                               |
+                        | Blood Type ID (FK)                             |
+                        | City ID (FK)                                        |
+                        | User ID (FK)                                        |
+                        +--------------------------------------------------+
+                                          |
+                                          |
+                                          |
+                        +---------------+---------------+
+                        |                          Recipient                     |
+                        |-------------------------------------------------|
+                        | Recipient ID                                       |
+                        | Blood Type ID (FK)                             |
+                        | City ID (FK)                                        |
+                        | User ID (FK)                                        |
+                        +--------------------------------------------------+
+                                          |
+                                          |
+                                          |
+                       +----------------+-----------------+
+                       |                            Donation                  |
+                       |------------------------------------------------------|
+                       | Donation ID                                     |
+                       | Donor ID (FK)                               |
+                       | Recipient ID (FK)                       |
+                       | Date and Time                                |
+                       +------------------------------------------------------+
+
+                       
+                       
+                       
+ USER (UserID, Name, Email, Phone, Age, Gender, Location)
+
+DONOR (DonorID, BloodType)
+
+RECIPIENT (RecipientID, BloodType)
+
+BLOOD_REQUEST (RequestID, Date, Location, Status)
+
+BLOOD_DONATION (DonationID, Date, Location)
+
+USER_DONOR (UserID, DonorID)
+
+USER_RECIPIENT (UserID, RecipientID)
+
+DONOR_DONATES_BLOOD (DonorID, DonationID)
+
+RECIPIENT_REQUESTS_BLOOD (RecipientID, RequestID)
+
+#----------------------------------------------------------------------------------#
+CREATE TABLE USER (
+    UserID INT PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
+    Email VARCHAR(50) NOT NULL,
+    Phone VARCHAR(20) NOT NULL,
+    Age INT NOT NULL,
+    Gender CHAR(1) NOT NULL,
+    Location VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE DONOR (
+    DonorID INT PRIMARY KEY,
+    BloodType VARCHAR(3) NOT NULL
+);
+
+CREATE TABLE RECIPIENT (
+    RecipientID INT PRIMARY KEY,
+    BloodType VARCHAR(3) NOT NULL
+);
+
+CREATE TABLE BLOOD_REQUEST (
+    RequestID INT PRIMARY KEY,
+    Date DATE NOT NULL,
+    Location VARCHAR(50) NOT NULL,
+    Status VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE BLOOD_DONATION (
+    DonationID INT PRIMARY KEY,
+    Date DATE NOT NULL,
+    Location VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE USER_DONOR (
+    UserID INT NOT NULL,
+    DonorID INT NOT NULL,
+    PRIMARY KEY (UserID, DonorID),
+    FOREIGN KEY (UserID) REFERENCES USER(UserID),
+    FOREIGN KEY (DonorID) REFERENCES DONOR(DonorID)
+);
+
+CREATE TABLE USER_RECIPIENT (
+    UserID INT NOT NULL,
+    RecipientID INT NOT NULL,
+    PRIMARY KEY (UserID, RecipientID),
+    FOREIGN KEY (UserID) REFERENCES USER(UserID),
+    FOREIGN KEY (RecipientID) REFERENCES RECIPIENT(RecipientID)
+);
+
+CREATE TABLE DONOR_DONATES_BLOOD (
+    DonorID INT NOT NULL,
+    DonationID INT NOT NULL,
+    PRIMARY KEY (DonorID, DonationID),
+    FOREIGN KEY (DonorID) REFERENCES DONOR(DonorID),
+    FOREIGN KEY (DonationID) REFERENCES BLOOD_DONATION(DonationID)
+);
+
+CREATE TABLE RECIPIENT_REQUESTS_BLOOD (
+    RecipientID INT NOT NULL,
+    RequestID INT NOT NULL,
+    PRIMARY KEY (RecipientID, RequestID),
+    FOREIGN KEY (RecipientID) REFERENCES RECIPIENT(RecipientID),
+    FOREIGN KEY (RequestID) REFERENCES BLOOD_REQUEST(RequestID)
+);
+#----------------------------------------------------------------------------------#
+level 1:
+                  +--------------+
+                  |  THE BLOOD   |
+                  |   BRIDGE     |
+                  +------+-------+
+                         |
+          +--------------+---------------+
+          |                              |
+  +-------+-------+              +-------+-------+
+  |   Donor /     |              |  Recipient /   |
+  |   Recipient   |              |  Blood Request |
+  +---------------+              +---------------+
+          |                              |
+  +-------+--------+             +--------+--------+
+  |  Register User |             |   Search Blood  |
+  +----------------+             +----------------+
+
+  Register User                     Search Blood
+  +--------------+                  +--------------+
+  |  User Input  |                  |  User Input  |
+  +-------+------+                  +------+-------+
+          |                                   |
+  +-------+----------------+         +--------+----------------+
+  |  Check for Duplicate  |         |   Filter by Blood Type  |
+  +-----------------------+        +-------------------------+
+          |                                   |
+  +-------+----------------+         +--------+----------------+
+  |   Save User Details    |         |   Filter by Location    |
+  +------------------------+        +-------------------------+
+                                        |
+                              +---------+---------+
+                              |   Display Results |
+                              +-------------------+
+$----------------------------------------------------------------------------------$
+Level 0
+                       +---------------+
+                       |   THE BLOOD   |
+                       |    BRIDGE     |
+                       +-------+-------+
+                               |
+             +-----------------+----------------+
+             |                                  |
+     +-------+--------+              +----------+---------+
+     |   Donor /      |              |     Recipient /    |
+     |   Recipient    |              |     Blood Request  |
+     +----------------+              +----------+---------+
+                                                   |
+                                       +-----------+-----------+
+                                       |                       |
+                             +---------+---------+    +--------+-------+
+                             |   Register User   |    | Search Blood   |
+                             +-------------------+    +----------------+
+#------------------------------------------------------------------------------------------#
+               +------------------+         +---------------+
+               |      User        |         |   BloodType   |
+               +------------------+         +---------------+
+               | -userID: int     |         | -bloodType: string |
+               | -name: string    |         +------------------+
+               | -email: string   |
+               | -phone: string   |
+               | -age: int        |
+               | -gender: string  |
+               | -location: string|
+               +-------+----------+
+                       |
+                       |
+                       |
+       +---------------+----------------+
+       |                                |
++------+-------+                 +------+-------+
+|   Donor      |                 |   Recipient  |
++--------------+                 +--------------+
+| -donorID: int|                 | -recipientID: int|
+| -bloodType: string |            | -bloodType: string |
++--------------+                 +--------------+
+| +registerAsDonor(): void        | +registerAsRecipient(): void|
++--------------+                 +--------------+
+           \                             /
+            \                           /
+             \                         /
+             +------------------------+
+             |                        |
+         +--------+             +----------------+
+         | BloodRequest |        | BloodDonation  |
+         +--------+             +----------------+
+         | -requestID: int    |   | -donationID: int|
+         | -date: date        |   | -date: date     |
+         | -location: string  |   | -location: string|
+         | -status: string    |   |                |
+         +-------------------+   +----------------+
+         | +createRequest(): void| +createDonation(): void|
+         | +updateRequestStatus(): void|  +updateDonationStatus(): void|
+         +-------------------+   +----------------+
+
